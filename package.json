@@ -1,7 +1,7 @@
 {
-  "name": "extension-hello-world",
+  "name": "extension-bagigo-translater",
   "version": "1.0.0",
-  "description": "Simple Hello World Twitch Extension",
+  "description": "translate to Babigo",
   "main": "index.js",
   "scripts": {
     "cert": "node bin/generate_cert.js server",
@@ -11,11 +11,10 @@
     "twitch",
     "extension"
   ],
-  "author": "Emily Rose <amorelandra@twitch.tv>",
+  "author": "Tomoya Kobayashi <tomocha.marika@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
     "boom": "^7.2.0",
-    "color": "^3.0.0",
     "commander": "^2.15.0",
     "hapi": "^17.2.2",
     "inert": "^5.1.0",

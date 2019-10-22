@@ -1,33 +1,6 @@
 let token = '';
 let tuid = '';
-
 const twitch = window.Twitch.ext;
-
-// create the request options for our Twitch API calls
-const requests = {
-  set: createRequest('POST', 'cycle'),
-  get: createRequest('GET', 'query')
-};
-
-function createRequest (type, method) {
-  return {
-    type: type,
-    url: location.protocol + '//localhost:8081/color/' + method,
-    success: updateBlock,
-    error: logError
-  };
-}
-
-function setAuth (token) {
-  Object.keys(requests).forEach((req) => {
-    twitch.rig.log('Setting auth headers');
-    requests[req].headers = { 'Authorization': 'Bearer ' + token };
-  });
-}
-
-twitch.onContext(function (context) {
-  twitch.rig.log(context);
-});
 
 twitch.onAuthorized(function (auth) {
   // save our credentials
@@ -41,24 +14,50 @@ twitch.onAuthorized(function (auth) {
   $.ajax(requests.get);
 });
 
-function updateBlock (hex) {
-  twitch.rig.log('Updating block color');
-  $('#color').css('background-color', hex);
-}
-
-function logError(_, error, status) {
-  twitch.rig.log('EBS request returned '+status+' ('+error+')');
-}
-
-function logSuccess(hex, status) {
-  twitch.rig.log('EBS request returned '+hex+' ('+status+')');
-}
 
 $(function () {
   // when we click the cycle button
   $('#cycle').click(function () {
-  if(!token) { return twitch.rig.log('Not authorized'); }
-    twitch.rig.log('Requesting a color cycle');
-    $.ajax(requests.set);
+    if(!token) { return twitch.rig.log('Not authorized'); }
+    const word = $('#word').val();
+    const translated = makeBabigo(word);
+    twitch.rig.log(translated);
+    $('#disp').text(translated);
+    // $.ajax(requests.set);
   });
 });
+
+function makeBabigo(word){
+  let result = "";
+  // 一文字ずつ判定
+  for (text of word) {
+    result += judge(text);
+  }
+  return result;
+}
+
+function inArray(needle, heystack) {
+  for (i of heystack) {
+    if (i == needle) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function judge(text) {
+  let myMap = new Map();
+  let result = text;
+  myMap.set("ば", "あ か さ た な は ま や ら わ が ざ だ ば ぱ");
+  myMap.set("び", "い き し ち に ひ み り ぎ じ ぢ び ぴ");
+  myMap.set("ぶ", "う く す つ ぬ ふ む る ぐ ず づ ぶ ぷ");
+  myMap.set("べ", "え け せ て ね へ め れ げ ぜ で べ ぺ");
+  myMap.set("ぼ", "お こ そ と の ほ も ろ ご ぞ ど ぼ ぽ");
+
+  for (const [key, value] of myMap.entries()) {
+    if (inArray(text, value.split(' '))) {
+      result += key;
+    }
+  }
+  return result;
+}
